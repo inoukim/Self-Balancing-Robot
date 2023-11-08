@@ -21,7 +21,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "liquidcrystal_i2c.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -65,12 +65,21 @@ static void MX_I2C1_Init(void);
 #define GYRO_CONFIG_REG 0x1B	//Gyroscope config register
 #define ACCEL_CONFIG_REG 0x1C	//Accelerometer config register
 #define ACCEL_XOUT_H_REG 0x3B	//Accelerometer X_measurement
-#define TEMP_OUT_H_REG 0x41		//Temperature Measurement
 #define GYRO_XOUT_H_REG 0x43	//Gyroscope X Mesurement
 #define PWR_MGMT_1_REG 0x6B		//Power Management 1 Register
 #define WHO_AM_I_REG 0x75		//WHO am I register
 
-void MPU6050_Init (void)
+int16_t Accel_X_RAW = 0;
+int16_t Accel_Y_RAW = 0;
+int16_t Accel_Z_RAW = 0;
+
+int16_t Gyro_X_RAW = 0;
+int16_t Gyro_Y_RAW = 0;
+int16_t Gyro_Z_RAW = 0;
+
+float AX, AY, AZ, GX, GY, GZ;
+
+void MPU6050_Init(void)
 {
 	uint8_t check, Data;
 
@@ -84,22 +93,36 @@ void MPU6050_Init (void)
 		HAL_I2C_Mem_Write(&hi2c1, MPU6050_ADDR, SMPLRT_DIV_REG, 1, &Data, 1, 1000); //Set the Sampling rate to 1KHz
 		Data = 0x00;
 		HAL_I2C_Mem_Write(&hi2c1, MPU6050_ADDR, ACCEL_CONFIG_REG,1, &Data, 1, 1000); //Range is +/- 2g
-		HAL_I2C_Mem_Write(&hi2c1, MPU6050_ADDR, ACCEL_CONFIG_REG,1, &Data, 1, 1000); //Range is +/- 250 degree
+		HAL_I2C_Mem_Write(&hi2c1, MPU6050_ADDR, GYRO_CONFIG_REG,1, &Data, 1, 1000); //Range is +/- 250 degree
 
 	}
 }
-void MPU6050_Read_Accel (void)
+
+void MPU6050_Read_Accel(void)
 {
 	uint8_t R_data[6];
 
-	HAL_I2C_Mem_Read (&hi2c1, MPU6050_ADDR, ACCEL_XOUT_H_REG,1, R_data, 6, 1000);
+	HAL_I2C_Mem_Read(&hi2c1, MPU6050_ADDR, ACCEL_XOUT_H_REG,1, R_data, 6, 1000);
 	Accel_X_RAW = (int16_t)(R_data[0] << 8 | R_data[1]);
 	Accel_Y_RAW = (int16_t)(R_data[2] << 8 | R_data[3]);
 	Accel_Z_RAW = (int16_t)(R_data[4] << 8 | R_data[5]);
+	AX = Accel_X_RAW / 16,384.0; //16,384 is pulled from the datasheet sensivity scale
+	AY = Accel_Y_RAW / 16,384.0;
+	AZ = Accel_Z_RAW / 16,384.0;
 
+}
+void MPU6050_Read_Gyro(void)
+{
+	uint8_t R_data[6];
+	int16_t Gyro_X_RAW, Gyro_Y_RAW, Gyro_Z_RAW;
+	HAL_I2C_Mem_Read(&hi2c1, MPU6050_ADDR, GYRO_XOUT_H_REG,1, R_data, 6, 1000);
+	Gyro_X_RAW = (int16_t)(R_data[0] << 8 | R_data[1]);
+	Gyro_Y_RAW = (int16_t)(R_data[2] << 8 | R_data[3]);
+	Gyro_Z_RAW = (int16_t)(R_data[4] << 8 | R_data[5]);
 
-
-
+	GX = Gyro_X_RAW /131.0; //131.0 is pulled from the datasheet sensivity scale
+	GY = Gyro_Y_RAW /131.0;
+	GZ = Gyro_Z_RAW /131.0;
 }
 /* USER CODE END 0 */
 
@@ -134,7 +157,14 @@ int main(void)
   MX_USART2_UART_Init();
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
-
+  HD44780_Init(2);
+  MPU6050_Init();
+  HD44780_Clear();
+  HD44780_SetCursor(0,0);
+  HD44780_PrintStr("Initalizing...");
+  HAL_Delay(1000);
+  HD44780_Clear();
+  HD44780_Backlight();
   /* USER CODE END 2 */
 
   /* Infinite loop */
