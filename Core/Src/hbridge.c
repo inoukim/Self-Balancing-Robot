@@ -4,3 +4,4 @@
 	uint16_t readValue;
 	int speed;
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, 0);
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, 0);
