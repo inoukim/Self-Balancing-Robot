@@ -22,6 +22,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "liquidcrystal_i2c.h"
+#include "mpu6050.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -68,7 +69,7 @@ static void MX_TIM2_Init(void);
 #define GYRO_CONFIG_REG 0x1B	//Gyroscope config register
 #define ACCEL_CONFIG_REG 0x1C	//Accelerometer config register
 #define ACCEL_XOUT_H_REG 0x3B	//Accelerometer X_measurement
-#define GYRO_XOUT_H_REG 0x43	//Gyroscope X Mesurement
+#define GYRO_XOUT_H_REG 0x43	//Gyroscope X Measurement
 #define PWR_MGMT_1_REG 0x6B		//Power Management 1 Register
 #define WHO_AM_I_REG 0x75		//WHO am I register
 
