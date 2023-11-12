@@ -21,8 +21,9 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "liquidcrystal_i2c.h"
-#include "mpu6050.h"
+//#include "liquidcrystal_i2c.h"
+//#include "mpu6050.h"
+#include "hbridge.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -63,71 +64,7 @@ static void MX_TIM2_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-#define MPU6050_ADDR 0xD0
 
-#define SMPLRT_DIV_REG 0x19 	//sample rate divider register
-#define GYRO_CONFIG_REG 0x1B	//Gyroscope config register
-#define ACCEL_CONFIG_REG 0x1C	//Accelerometer config register
-#define ACCEL_XOUT_H_REG 0x3B	//Accelerometer X_measurement
-#define GYRO_XOUT_H_REG 0x43	//Gyroscope X Measurement
-#define PWR_MGMT_1_REG 0x6B		//Power Management 1 Register
-#define WHO_AM_I_REG 0x75		//WHO am I register
-
-int16_t Accel_X_RAW = 0;
-int16_t Accel_Y_RAW = 0;
-int16_t Accel_Z_RAW = 0;
-
-int16_t Gyro_X_RAW = 0;
-int16_t Gyro_Y_RAW = 0;
-int16_t Gyro_Z_RAW = 0;
-
-float AX, AY, AZ, GX, GY, GZ;
-
-void MPU6050_Init(void)
-{
-	uint8_t check, Data;
-
-	HAL_I2C_Mem_Read (&hi2c1, MPU6050_ADDR,WHO_AM_I_REG,1, &check, 1, 1000);
-
-	if (check == 104) //if register value is 0x68 the device is there
-	{
-		Data = 0;
-		HAL_I2C_Mem_Write(&hi2c1, MPU6050_ADDR, PWR_MGMT_1_REG, 1,&Data, 1, 1000); //Wake up all the sensors
-		Data = 0x07;
-		HAL_I2C_Mem_Write(&hi2c1, MPU6050_ADDR, SMPLRT_DIV_REG, 1, &Data, 1, 1000); //Set the Sampling rate to 1KHz
-		Data = 0x00;
-		HAL_I2C_Mem_Write(&hi2c1, MPU6050_ADDR, ACCEL_CONFIG_REG,1, &Data, 1, 1000); //Range is +/- 2g
-		HAL_I2C_Mem_Write(&hi2c1, MPU6050_ADDR, GYRO_CONFIG_REG,1, &Data, 1, 1000); //Range is +/- 250 degree
-
-	}
-}
-
-void MPU6050_Read_Accel(void)
-{
-	uint8_t R_data[6];
-
-	HAL_I2C_Mem_Read(&hi2c1, MPU6050_ADDR, ACCEL_XOUT_H_REG,1, R_data, 6, 1000);
-	Accel_X_RAW = (int16_t)(R_data[0] << 8 | R_data[1]);
-	Accel_Y_RAW = (int16_t)(R_data[2] << 8 | R_data[3]);
-	Accel_Z_RAW = (int16_t)(R_data[4] << 8 | R_data[5]);
-	AX = Accel_X_RAW / 16,384.0; //16,384 is pulled from the datasheet sensivity scale
-	AY = Accel_Y_RAW / 16,384.0;
-	AZ = Accel_Z_RAW / 16,384.0;
-
-}
-void MPU6050_Read_Gyro(void)
-{
-	uint8_t R_data[6];
-	int16_t Gyro_X_RAW, Gyro_Y_RAW, Gyro_Z_RAW;
-	HAL_I2C_Mem_Read(&hi2c1, MPU6050_ADDR, GYRO_XOUT_H_REG,1, R_data, 6, 1000);
-	Gyro_X_RAW = (int16_t)(R_data[0] << 8 | R_data[1]);
-	Gyro_Y_RAW = (int16_t)(R_data[2] << 8 | R_data[3]);
-	Gyro_Z_RAW = (int16_t)(R_data[4] << 8 | R_data[5]);
-
-	GX = Gyro_X_RAW /131.0; //131.0 is pulled from the datasheet sensivity scale
-	GY = Gyro_Y_RAW /131.0;
-	GZ = Gyro_Z_RAW /131.0;
-}
 /* USER CODE END 0 */
 
 /**
@@ -162,20 +99,15 @@ int main(void)
   MX_I2C1_Init();
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
-  HD44780_Init(2);
-  MPU6050_Init();
-  HD44780_Clear();
-  HD44780_SetCursor(0,0);
-  HD44780_PrintStr("Initalizing...");
-  HAL_Delay(1000);
-  HD44780_Clear();
-  HD44780_Backlight();
+  HAL_TIM_Base_Start(&htim2);
+  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_3);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  Set_PWM(50);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -285,7 +217,7 @@ static void MX_TIM2_Init(void)
   htim2.Instance = TIM2;
   htim2.Init.Prescaler = 0;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim2.Init.Period = 4294967295;
+  htim2.Init.Period = 99;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
