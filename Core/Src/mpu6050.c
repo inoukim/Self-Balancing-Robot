@@ -31,23 +31,29 @@ void MPU6050_Init(void)
 	}
 }
 
-void MPU6050_Read_Accel(void)
+int8_t MPU6050_Read_Accel(void)
 {
 	uint8_t R_data[6];
-
-	HAL_I2C_Mem_Read(&hi2c1, MPU6050_ADDR, ACCEL_XOUT_H_REG,1, R_data, 6, 1000);
+	HAL_StatusTypeDef returnValue;
+	returnValue = HAL_I2C_Mem_Read(&hi2c1, MPU6050_ADDR, ACCEL_XOUT_H_REG,1, R_data, 6, 1000);
 	Accel_X_RAW = (int16_t)(R_data[0] << 8 | R_data[1]);
 	Accel_Y_RAW = (int16_t)(R_data[2] << 8 | R_data[3]);
 	Accel_Z_RAW = (int16_t)(R_data[4] << 8 | R_data[5]);
 	AX = Accel_X_RAW / 16,384.0; //16,384 is pulled from the datasheet sensivity scale
 	AY = Accel_Y_RAW / 16,384.0;
 	AZ = Accel_Z_RAW / 16,384.0;
+	if (returnVlaue != HAL_OK) {
+		return MPU6050_I2C_ERR;
+	}
+	return MPU6050_OK;
 
 }
-void MPU6050_Read_Gyro(void)
+
+int8_t MPU6050_Read_Gyro(void)
 {
 	uint8_t R_data[6];
-	HAL_I2C_Mem_Read(&hi2c1, MPU6050_ADDR, GYRO_XOUT_H_REG,1, R_data, 6, 1000);
+	HAL_StatusTypeDef returnValue;
+	returnValue = HAL_I2C_Mem_Read(&hi2c1, MPU6050_ADDR, GYRO_XOUT_H_REG,1, R_data, 6, 1000);
 	Gyro_X_RAW = (int16_t)(R_data[0] << 8 | R_data[1]);
 	Gyro_Y_RAW = (int16_t)(R_data[2] << 8 | R_data[3]);
 	Gyro_Z_RAW = (int16_t)(R_data[4] << 8 | R_data[5]);
@@ -55,4 +61,38 @@ void MPU6050_Read_Gyro(void)
 	GX = Gyro_X_RAW /131.0; //131.0 is pulled from the datasheet sensivity scale
 	GY = Gyro_Y_RAW /131.0;
 	GZ = Gyro_Z_RAW /131.0;
+	if (returnValue != HAL_OK) {
+		return MPU6050_I2C_ERR;
+	}
+	return MPU6050_OK;
+}
+int8_t MPU6050_Read_All(void)
+{
+	uint8_t R_data[14];
+	HAL_StatusTypeDef returnValue;
+	returnValue = HAL_I2C_Mem_Read(&hi2c1, MPU6050_ADDR, GYRO_XOUT_H_REG,1, R_data, 14, 1000);
+	Accel_X_RAW = (int16_t)(R_data[0] << 8 | R_data[1]);
+	Accel_Y_RAW = (int16_t)(R_data[2] << 8 | R_data[3]);
+	Accel_Z_RAW = (int16_t)(R_data[4] << 8 | R_data[5]);
+	Gyro_X_RAW = (int16_t)(R_data[8] << 8 | R_data[9]);
+	Gyro_Y_RAW = (int16_t)(R_data[10] << 8 | R_data[11]);
+	Gyro_Z_RAW = (int16_t)(R_data[12] << 8 | R_data[13]);
+
+	AX = Accel_X_RAW / 16,384.0; //16,384 is pulled from the datasheet sensivity scale
+	AY = Accel_Y_RAW / 16,384.0;
+	AZ = Accel_Z_RAW / 16,384.0;
+	GX = Gyro_X_RAW /131.0; //131.0 is pulled from the datasheet sensivity scale
+	GY = Gyro_Y_RAW /131.0;
+	GZ = Gyro_Z_RAW /131.0;
+
+	if (returnValue != HAL_OK) {
+		return MPU6050_I2C_ERR;
+	}
+	return MPU6050_OK;
+}
+
+void Avg_MPU6050(void){
+	int i = 0;
+	float ax =0, ay =0, az = 0, gy = 0;
+	int discardfirstmeas = 100;
 }
