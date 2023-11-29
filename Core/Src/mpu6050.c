@@ -42,7 +42,7 @@ int8_t MPU6050_Read_Accel(void)
 	AX = Accel_X_RAW / 16,384.0; //16,384 is pulled from the datasheet sensivity scale
 	AY = Accel_Y_RAW / 16,384.0;
 	AZ = Accel_Z_RAW / 16,384.0;
-	if (returnVlaue != HAL_OK) {
+	if (returnValue != HAL_OK) {
 		return MPU6050_I2C_ERR;
 	}
 	return MPU6050_OK;
@@ -78,9 +78,9 @@ int8_t MPU6050_Read_All(void)
 	Gyro_Y_RAW = (int16_t)(R_data[10] << 8 | R_data[11]);
 	Gyro_Z_RAW = (int16_t)(R_data[12] << 8 | R_data[13]);
 
-	AX = Accel_X_RAW / 16,384.0; //16,384 is pulled from the datasheet sensivity scale
-	AY = Accel_Y_RAW / 16,384.0;
-	AZ = Accel_Z_RAW / 16,384.0;
+	AX = Accel_X_RAW / 16384.0; //16,384 is pulled from the datasheet sensivity scale
+	AY = Accel_Y_RAW / 16384.0;
+	AZ = Accel_Z_RAW / 16384.0;
 	GX = Gyro_X_RAW /131.0; //131.0 is pulled from the datasheet sensivity scale
 	GY = Gyro_Y_RAW /131.0;
 	GZ = Gyro_Z_RAW /131.0;

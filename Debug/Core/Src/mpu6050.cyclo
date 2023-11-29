@@ -1,3 +1,0 @@
-../Core/Src/mpu6050.c:15:6:MPU6050_Init	2
-../Core/Src/mpu6050.c:34:6:MPU6050_Read_Accel	4
-../Core/Src/mpu6050.c:47:6:MPU6050_Read_Gyro	1

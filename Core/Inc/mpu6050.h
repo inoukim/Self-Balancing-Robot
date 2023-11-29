@@ -19,8 +19,11 @@
 #define PWR_MGMT_1_REG 0x6B		//Power Management 1 Register
 #define WHO_AM_I_REG 0x75		//WHO am I register
 
+#define MPU6050_I2C_ERR (-1)
+#define MPU6050_OK (1)
+
 void MPU6050_Init();
-void MPU6050_Read_Accel();
-void MPU6050_Read_Gyro();
+int8_t MPU6050_Read_Accel();
+int8_t MPU6050_Read_Gyro();
 
 #endif /* INC_MPU6050_H_ */

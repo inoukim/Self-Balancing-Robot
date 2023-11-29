@@ -1,3 +1,4 @@
+"./Core/Src/control.o"
 "./Core/Src/hbridge.o"
 "./Core/Src/liquidcrystal_i2c.o"
 "./Core/Src/main.o"
