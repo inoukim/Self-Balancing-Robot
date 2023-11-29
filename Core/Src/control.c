@@ -1,13 +1,14 @@
-#include "control_loop.h"
+#include "control.h"
 #include "PID.h"
 #include "mpu6050.h"
 #include "hbridge.h"
 
+extern float AX, AY, AZ, GY;
 
-#define delay 0.005;
-#define CF_OFFSET_GYRO (0.98)
-#define CF_OFFSET_ACCEL (1-CF_OFFSET_GYRO)
+
 float pitch = 0;
+int ref;
+float angle = 0;
 int8_t p_dir = STOP;
 
 void calibrate_mpu(){
