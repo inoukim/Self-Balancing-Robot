@@ -4,6 +4,6 @@
 #include "stm32f4xx_hal.h"
 #include <stdint.h>
 
-int PID(float ref, float pitch, float dt);
+int PID(float ref, float pitch);
 
 #endif /* INC_PID_H_ */

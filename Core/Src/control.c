@@ -18,7 +18,7 @@ void calibrate_mpu(){
 void angle_to_pwm(){
 	int pwm;
 
-	pwm = PID(ref,angle,delay);
+	pwm = PID(ref,angle);
 	Set_PWM(pwm);
 
 }

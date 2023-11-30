@@ -12,7 +12,7 @@
 
 
 
-int PID(float ref, float pitch, float dt) {
+int PID(float ref, float pitch) {
 
 	static float lastError;
 	float P, I, D, pid_pwm;
