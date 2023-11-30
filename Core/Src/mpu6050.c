@@ -12,7 +12,7 @@ int16_t Gyro_Z_RAW = 0;
 
 float AX, AY, AZ, GX, GY, GZ;
 
-void MPU6050_Init(void)
+int8_t MPU6050_Init(void)
 {
 	uint8_t check, Data;
 
@@ -27,8 +27,8 @@ void MPU6050_Init(void)
 		Data = 0x00;
 		HAL_I2C_Mem_Write(&hi2c1, MPU6050_ADDR, ACCEL_CONFIG_REG,1, &Data, 1, 1000); //Range is +/- 2g
 		HAL_I2C_Mem_Write(&hi2c1, MPU6050_ADDR, GYRO_CONFIG_REG,1, &Data, 1, 1000); //Range is +/- 250 degree
-
 	}
+	return MPU6050_OK;
 }
 
 int8_t MPU6050_Read_Accel(void)
@@ -70,7 +70,7 @@ int8_t MPU6050_Read_All(void)
 {
 	uint8_t R_data[14];
 	HAL_StatusTypeDef returnValue;
-	returnValue = HAL_I2C_Mem_Read(&hi2c1, MPU6050_ADDR, GYRO_XOUT_H_REG,1, R_data, 14, 1000);
+	returnValue = HAL_I2C_Mem_Read(&hi2c1, MPU6050_ADDR, ACCEL_XOUT_H_REG,1, R_data, 14, 1000);
 	Accel_X_RAW = (int16_t)(R_data[0] << 8 | R_data[1]);
 	Accel_Y_RAW = (int16_t)(R_data[2] << 8 | R_data[3]);
 	Accel_Z_RAW = (int16_t)(R_data[4] << 8 | R_data[5]);
@@ -91,8 +91,4 @@ int8_t MPU6050_Read_All(void)
 	return MPU6050_OK;
 }
 
-void Avg_MPU6050(void){
-	int i = 0;
-	float ax =0, ay =0, az = 0, gy = 0;
-	int discardfirstmeas = 100;
-}
+

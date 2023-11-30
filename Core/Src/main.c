@@ -21,9 +21,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-//#include "liquidcrystal_i2c.h"
-//#include "mpu6050.h"
-#include "hbridge.h"
+#include "mpu6050.h"
+#include "control.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -45,8 +44,7 @@
 I2C_HandleTypeDef hi2c1;
 
 TIM_HandleTypeDef htim2;
-
-UART_HandleTypeDef huart2;
+TIM_HandleTypeDef htim11;
 
 /* USER CODE BEGIN PV */
 
@@ -55,9 +53,9 @@ UART_HandleTypeDef huart2;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
-static void MX_USART2_UART_Init(void);
 static void MX_I2C1_Init(void);
 static void MX_TIM2_Init(void);
+static void MX_TIM11_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -74,7 +72,7 @@ static void MX_TIM2_Init(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-
+	int8_t ok_flag;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -95,12 +93,20 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_USART2_UART_Init();
   MX_I2C1_Init();
   MX_TIM2_Init();
+  MX_TIM11_Init();
   /* USER CODE BEGIN 2 */
   HAL_TIM_Base_Start(&htim2);
   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_3);
+  ok_flag = MPU6050_Init();
+  while (ok_flag != MPU6050_OK)
+  {
+	  ok_flag = MPU6050_Init();
+
+  }
+  calibrate_mpu();
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -111,6 +117,8 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+	  loop();
+	  HAL_Delay(50);
   }
   /* USER CODE END 3 */
 }
@@ -132,7 +140,8 @@ void SystemClock_Config(void)
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI|RCC_OSCILLATORTYPE_HSE;
+  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
@@ -255,35 +264,47 @@ static void MX_TIM2_Init(void)
 }
 
 /**
-  * @brief USART2 Initialization Function
+  * @brief TIM11 Initialization Function
   * @param None
   * @retval None
   */
-static void MX_USART2_UART_Init(void)
+static void MX_TIM11_Init(void)
 {
 
-  /* USER CODE BEGIN USART2_Init 0 */
+  /* USER CODE BEGIN TIM11_Init 0 */
 
-  /* USER CODE END USART2_Init 0 */
+  /* USER CODE END TIM11_Init 0 */
 
-  /* USER CODE BEGIN USART2_Init 1 */
+  TIM_IC_InitTypeDef sConfigIC = {0};
 
-  /* USER CODE END USART2_Init 1 */
-  huart2.Instance = USART2;
-  huart2.Init.BaudRate = 115200;
-  huart2.Init.WordLength = UART_WORDLENGTH_8B;
-  huart2.Init.StopBits = UART_STOPBITS_1;
-  huart2.Init.Parity = UART_PARITY_NONE;
-  huart2.Init.Mode = UART_MODE_TX_RX;
-  huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-  huart2.Init.OverSampling = UART_OVERSAMPLING_16;
-  if (HAL_UART_Init(&huart2) != HAL_OK)
+  /* USER CODE BEGIN TIM11_Init 1 */
+
+  /* USER CODE END TIM11_Init 1 */
+  htim11.Instance = TIM11;
+  htim11.Init.Prescaler = 4;
+  htim11.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim11.Init.Period = 15999;
+  htim11.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim11.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim11) != HAL_OK)
   {
     Error_Handler();
   }
-  /* USER CODE BEGIN USART2_Init 2 */
+  if (HAL_TIM_IC_Init(&htim11) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sConfigIC.ICPolarity = TIM_INPUTCHANNELPOLARITY_RISING;
+  sConfigIC.ICSelection = TIM_ICSELECTION_DIRECTTI;
+  sConfigIC.ICPrescaler = TIM_ICPSC_DIV1;
+  sConfigIC.ICFilter = 0;
+  if (HAL_TIM_IC_ConfigChannel(&htim11, &sConfigIC, TIM_CHANNEL_1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM11_Init 2 */
 
-  /* USER CODE END USART2_Init 2 */
+  /* USER CODE END TIM11_Init 2 */
 
 }
 
@@ -312,6 +333,14 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : USART_TX_Pin USART_RX_Pin */
+  GPIO_InitStruct.Pin = USART_TX_Pin|USART_RX_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  GPIO_InitStruct.Alternate = GPIO_AF7_USART2;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pin : LD2_Pin */
   GPIO_InitStruct.Pin = LD2_Pin;

@@ -22,7 +22,7 @@
 #define MPU6050_I2C_ERR (-1)
 #define MPU6050_OK (1)
 
-void MPU6050_Init();
+int8_t MPU6050_Init();
 int8_t MPU6050_Read_Accel();
 int8_t MPU6050_Read_Gyro();
 
