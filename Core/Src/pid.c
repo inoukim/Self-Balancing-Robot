@@ -2,11 +2,11 @@
 #include <stdlib.h>
 
 
-#define Kp 17
-#define Kd 5
-#define Ki 4
+#define Kp 10
+#define Kd 1
+#define Ki 32
 
-#define MAX_PWM 70
+#define MAX_PWM 55
 #define MIN_PWM -MAX_PWM
 
 

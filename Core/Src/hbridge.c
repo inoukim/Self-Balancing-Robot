@@ -9,9 +9,9 @@ void Set_PWM(int PWM) {
 
 	// Direction is based on angle read from MPU6050
 	if (PWM > 0){
-		direction = FORWARD;
+		direction = BACKWARD;
 	} else if (PWM < 0){
-		direction = BACKWARD ;
+		direction = FORWARD;
 	}
 	else
 		direction = STOP;
