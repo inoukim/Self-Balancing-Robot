@@ -33,7 +33,7 @@ int PID(float ref, float pitch) {
 	}
 
 	//calculate Derivative term
-	D = -Kd * ((error - lastError)/0.03);
+	D = -Kd * ((error - lastError)/0.005);
 
 	//total PID value
 	pid_pwm = P + I + D;
