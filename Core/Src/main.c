@@ -119,7 +119,7 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 	  loop();
-	  HAL_Delay(5);
+	  HAL_Delay(3);
   }
   /* USER CODE END 3 */
 }

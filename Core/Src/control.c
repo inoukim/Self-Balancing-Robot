@@ -8,7 +8,7 @@ extern float AX, AY, AZ, GX , GY, GZ;
 
 float pitch = 0;
 static int8_t cal_flag = 0;
-float ref;
+float ref = 0;
 int8_t p_dir = STOP;
 static float pitch_gyro = 0, pitch_accel = 0;
 float avg[11];
@@ -16,7 +16,7 @@ int count = 0;
 int pwm;
 void calibrate_mpu(){
 	loop();
-	ref = pitch;
+	//ref = pitch;
 	cal_flag = 1;
 }
 
@@ -32,7 +32,8 @@ void loop(){
 
 	int8_t loop_flag = MPU6050_Read_All();
 	if (loop_flag == MPU6050_OK && cal_flag == 1){
-		pitch_accel = atan2(AX, sqrt(AY*AY + AZ*AZ) * (180/M_PI));
+		//pitch_accel = atan2(AX, sqrt(AY*AY + AZ*AZ) * (180/M_PI));
+	    pitch_accel = atan2(AY, sqrt(pow(AX, 2) + pow(AZ, 2))) * (180/M_PI);
 		pitch_gyro = pitch + GX * delay;
 		pitch = CF_OFFSET_GYRO * pitch_gyro + CF_OFFSET_ACCEL * pitch_accel;
 		angle_to_pwm();

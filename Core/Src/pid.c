@@ -2,12 +2,12 @@
 #include <stdlib.h>
 
 
-#define Kp 10
-#define Kd 1
-#define Ki 32
+#define Kp 20
+#define Kd 0.6
+#define Ki 2
 
-#define MAX_PWM 55
-#define MIN_PWM -MAX_PWM
+#define MAX_PWM 65
+#define MIN_PWM -65
 
 
 
@@ -33,7 +33,7 @@ int PID(float ref, float pitch) {
 	}
 
 	//calculate Derivative term
-	D = -Kd * (error - lastError);
+	D = -Kd * ((error - lastError)/0.03);
 
 	//total PID value
 	pid_pwm = P + I + D;

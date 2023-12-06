@@ -8,9 +8,9 @@ void Set_PWM(int PWM) {
 	uint16_t speed = abs(PWM);
 
 	// Direction is based on angle read from MPU6050
-	if (PWM > 0){
+	if (PWM > 2){
 		direction = BACKWARD;
-	} else if (PWM < 0){
+	} else if (PWM < 2){
 		direction = FORWARD;
 	}
 	else
