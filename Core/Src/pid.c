@@ -2,12 +2,12 @@
 #include <stdlib.h>
 
 
-#define Kp 11
-#define Kd 0.4
-#define Ki 2
+#define Kp 15
+#define Kd 0.1
+#define Ki 0.1
 
-#define MAX_PWM 65
-#define MIN_PWM -65
+#define MAX_PWM 80
+#define MIN_PWM -80
 
 
 
@@ -15,7 +15,7 @@
 int PID(float ref, float pitch) {
 
 	static float lastError;
-	float P, I, D, pid_pwm;
+	static float P =0, I =0, D=0, pid_pwm;
 
 	//calculate error
 	float error = ref - pitch;
@@ -24,7 +24,7 @@ int PID(float ref, float pitch) {
 	P = Kp * error;
 
 	//calculate Integral term. Account for wind-up
-	I += Ki* error ;
+	I += Ki* error;
 
 	if (I > MAX_PWM)
 		I = MAX_PWM;
@@ -33,7 +33,7 @@ int PID(float ref, float pitch) {
 	}
 
 	//calculate Derivative term
-	D = -Kd * ((error - lastError)/0.005);
+	D = -Kd * ((error - lastError)/0.001);
 
 	//total PID value
 	pid_pwm = P + I + D;
