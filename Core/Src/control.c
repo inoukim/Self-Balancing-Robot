@@ -7,18 +7,12 @@ extern float AX, AY, AZ, GX , GY, GZ;
 
 
 float pitch = 0;
-static int8_t cal_flag = 0;
 float ref = 0;
 int8_t p_dir = STOP;
 static float pitch_gyro = 0, pitch_accel = 0;
-float avg[11];
 int count = 0;
 int pwm;
-void calibrate_mpu(){
-	loop();
-	//ref = pitch;
-	cal_flag = 1;
-}
+
 
 void angle_to_pwm(){
 

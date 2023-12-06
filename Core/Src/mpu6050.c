@@ -16,7 +16,7 @@ int8_t MPU6050_Init(void)
 {
 	uint8_t check, Data;
 
-	HAL_I2C_Mem_Read (&hi2c1, MPU6050_ADDR,WHO_AM_I_REG,1, &check, 1, 1000);
+	HAL_I2C_Mem_Read(&hi2c1, MPU6050_ADDR,WHO_AM_I_REG,1, &check, 1, 1000);
 
 	if (check == 104) //if register value is 0x68 the device is there
 	{

@@ -22,6 +22,7 @@
 #include "stm32f4xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "control.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -204,7 +205,12 @@ void SysTick_Handler(void)
 void TIM1_TRG_COM_TIM11_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM1_TRG_COM_TIM11_IRQn 0 */
-
+	if (__HAL_TIM_GET_FLAG(&htim11, TIM_FLAG_UPDATE) != RESET) { //checks the status flag register of timer 11
+	if (__HAL_TIM_GET_IT_SOURCE(&htim11, TIM_IT_UPDATE) != RESET) { //checks if interrupt is enabled for timer 11
+		__HAL_TIM_CLEAR_IT(&htim11, TIM_IT_UPDATE); //clears the interrupt flag
+			loop();
+		}
+	}
   /* USER CODE END TIM1_TRG_COM_TIM11_IRQn 0 */
   //HAL_TIM_IRQHandler(&htim11);
   /* USER CODE BEGIN TIM1_TRG_COM_TIM11_IRQn 1 */
@@ -213,10 +219,4 @@ void TIM1_TRG_COM_TIM11_IRQHandler(void)
 }
 
 /* USER CODE BEGIN 1 */
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
-
-	if(htim->Instance==TIM11){
-		loop();
-	}
-}
 /* USER CODE END 1 */

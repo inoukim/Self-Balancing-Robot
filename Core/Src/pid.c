@@ -2,8 +2,8 @@
 #include <stdlib.h>
 
 
-#define Kp 20
-#define Kd 0.6
+#define Kp 11
+#define Kd 0.4
 #define Ki 2
 
 #define MAX_PWM 65

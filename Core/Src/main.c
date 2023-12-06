@@ -79,7 +79,7 @@ int main(void)
   /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  HAL_Init();
+	HAL_Init();
 
   /* USER CODE BEGIN Init */
 
@@ -106,7 +106,7 @@ int main(void)
 	  ok_flag = MPU6050_Init();
 
   }
-  calibrate_mpu();
+  HAL_TIM_Base_Start_IT(&htim11);
 
   /* USER CODE END 2 */
 
@@ -118,8 +118,8 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  loop();
-	  HAL_Delay(3);
+	  //loop();
+	  //HAL_Delay(3);
   }
   /* USER CODE END 3 */
 }
