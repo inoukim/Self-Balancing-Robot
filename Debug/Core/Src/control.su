@@ -1,3 +1,2 @@
-../Core/Src/control.c:17:6:calibrate_mpu	8	static
-../Core/Src/control.c:23:6:angle_to_pwm	8	static
-../Core/Src/control.c:31:6:loop	32	static
+../Core/Src/control.c:17:6:angle_to_pwm	8	static
+../Core/Src/control.c:25:6:loop	32	static

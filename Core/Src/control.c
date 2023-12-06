@@ -25,7 +25,7 @@ void angle_to_pwm(){
 void loop(){
 
 	int8_t loop_flag = MPU6050_Read_All();
-	if (loop_flag == MPU6050_OK && cal_flag == 1){
+	if (loop_flag == MPU6050_OK){
 		//pitch_accel = atan2(AX, sqrt(AY*AY + AZ*AZ) * (180/M_PI));
 	    pitch_accel = atan2(AY, sqrt(pow(AX, 2) + pow(AZ, 2))) * (180/M_PI);
 		pitch_gyro = pitch + GX * delay;
